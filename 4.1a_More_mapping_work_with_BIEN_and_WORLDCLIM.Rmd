@@ -126,7 +126,9 @@ plot(peninsula.worldclim[["bio1"]])
 
 Answer the questions about this peninsula example. Then do your own example from Latin America:
 1. Where in the world is the peninsula mapped above?
+#Spain! It's the Iberian penninsula
 2. Is altitude a climate variable? How do the peninsula maps plotted above support your answer?
+#Yes! The temperature is significantly colder and higher altitudes. 
 3. Make a South America map with occurrence data for Jungia pauciflora & J. polita and:
           a. Crop the map to allow discerning more detail in the two ranges
           b. Also include altitude data or climate data, with occurrence points overlayed.
