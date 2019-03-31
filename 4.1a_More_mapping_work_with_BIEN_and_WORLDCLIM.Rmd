@@ -133,8 +133,7 @@ Answer the questions about this peninsula example. Then do your own example from
           a. Crop the map to allow discerning more detail in the two ranges
           b. Also include altitude data or climate data, with occurrence points overlayed.
 
-
-
+#here is everything combined: 
 ```{r}
 #Trimming data to match South American region
 SAmerica.worldalt <- crop(all.worldalt, extent(-75, -50, -30, -15))
@@ -397,18 +396,117 @@ Choose any two, and do the following:
 
 WORK WITH TAXISE
 1. Look up - are they accepted names or are they synonyms?
+
+```{r}
+library("rgbif")
+library("spocc")
+library("taxize")
+results=gnr_resolve(names="Minuartia cerastiifolia")
+head(results$matched_name)
+results=gnr_resolve(names="Petrocoptis hispanica")
+head(results$matched_name)
+```
+
 2. Look up the two plant taxa. Are they both angiosperms?
+
+```{r}
+name="Petrocoptis hispanica"  
+tsn=get_tsn(name, accepted=FALSE)
+tsn
+lapply(tsn, itis_acceptname)
+```
+
+```{r}
+#Here's another way to do that, in another database
+tax_name(q="Petrocoptis hispanica", get="family", db="ncbi")
+```
+
+```{r}
+#If you wanted to know all the genera in a family, or all species in a genus, 
+#then you're referring to taxa "downstream"
+downstream("Caryophyllaceae", downto="species", db="itis")
+```
+
+```{r}
+name="Minuartia cerastiifolia"  
+tsn=get_tsn(name, accepted=FALSE)
+tsn
+lapply(tsn, itis_acceptname)
+```
+
+```{r}
+#Here's another way to do that, in another database
+tax_name(q="Minuartia cerastiifolia", get="family", db="ncbi")
+```
+
+```{r}
+#If you wanted to know all the genera in a family, or all species in a genus, 
+#then you're referring to taxa "downstream"
+downstream("Caryophyllaceae", downto="species", db="itis")
+```
+
 3. Angiosperm or otherwise, what plant family do they belong to?
+
+#Yes, they are both angiosperms! 
+
 4. For at least one genus, look up all the species in that genus.
+
 5. For one species, look up to see if there are subspecies or other infraspecific forms.
+```{r}
+tax_name(q="Petrocoptis hispanica", get="subspecies", db="ncbi")
+```
+
+```{r}
+tax_name(q="Minuartia cerastiifolia", get="family", db="ncbi")
+```
 
 WORK WITH RGBIF OR SPOCC
 6. For both, search and download species occurrence data; prepare as a data-frame
+
+#data frame for Petrocoptis hispanica
+```{r}
+Flower <- occ(q="Petrocoptis hispanica", from="gbif", limit=50)
+Flower
+Flower.dat <- (Flower$gbif$data)
+head(Flower.dat)
+Flower.df <- occ2df(Flower)
+Flower.df
+dim(Flower.df)
+Flower.df <- Flower.df[complete.cases(Flower.df),]
+dim(Flower.df)
+Flower.df
+```
+
+#data frame for Minuartia cerastiifolia
+```{r}
+Planty <- occ(q="Minuartia cerastiifolia", from="gbif", limit=50)
+Planty
+Planty.dat <- (Planty$gbif$data)
+head(Planty.dat)
+Planty.df <- occ2df(Planty)
+Planty.df
+dim(Planty.df)
+Planty.df <- Planty.df[complete.cases(Planty.df),]
+dim(Planty.df)
+Planty.df
+```
+
 7. Clean-up the data-frame:  remove occurrences with missing data and duplicates
 
 
 WORK WITH OCCURRENCE DATA, WORLDCLIM DATA AND MAPS
 8. Map occurrence data with a climate variable for one species on the peninsula
+
+#for Petrocoptis hispanica
+```{r}
+P_hispanica <- BIEN_occurrence_species(species = "Petrocoptis hispanica")
+
+P_hispanica_rangemap <- BIEN_ranges_load_species("Petrocoptis hispanica")
+
+map('world', fill=T, col="grey", bg="light blue", xlim=c(-85,-35), ylim=c(-40,12))
+  plot(P_hispanica_rangemap, col="green", add=T)
+```
+
 9. Also map that species with climate variables on a world map or European map. Are you convinced that the species is endemic to this peninsula?
 10. Returning to your results for #4 above, find another species with a range outside of the  peninsula. Download occurrence data and map on a world map. 
 11. Then re-map on an appropriately cropped map.
