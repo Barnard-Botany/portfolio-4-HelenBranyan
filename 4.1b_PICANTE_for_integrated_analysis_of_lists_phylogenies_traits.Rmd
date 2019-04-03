@@ -268,13 +268,16 @@ abundance <- as.matrix(abundance)
 dim(abundance)
 ```
 
+```{R}
+library(labdsv)
+abundance<-matrify(abundance)
+abundance
+```
+
 #recipe data is now a matrix! 
 
 The compiled matrix has a master list of all plant species across all six lists. Resolve this master list for proper taxonomy -- each plant species should have an accepted scientific species name. (Using taxize if possible.)
 
-```{r}
-classification(c("RecipesAbundance.csv"), db="itis")
-```
 #taxize still not workin :(
 
 Phylogenize (revisiting skills from Digital Lab 3). Again, it's a good idea to write the tree you create as a file; you then can and should push back to GitHub as you submit your assignment. 
@@ -339,7 +342,12 @@ Figure out both Shannon or Simpson diversity indices, and PD (Phylogenetic Diver
 
 #let's go with Shannon first: 
 
-
+```{r}
+#library(vegan)
+abundance
+shannon<-diversity(abundance, index = "shannon")
+shannon
+```
 
 
 #now the PD: 
