@@ -401,7 +401,7 @@ WORK WITH TAXISE
 library("rgbif")
 library("spocc")
 library("taxize")
-results=gnr_resolve(names="Minuartia cerastiifolia")
+results=gnr_resolve(names="Minuartia rossii")
 head(results$matched_name)
 results=gnr_resolve(names="Petrocoptis hispanica")
 head(results$matched_name)
@@ -415,34 +415,26 @@ tsn=get_tsn(name, accepted=FALSE)
 tsn
 lapply(tsn, itis_acceptname)
 ```
-
+#looks like Petrocoptis hispanica is not here 
 ```{r}
-#Here's another way to do that, in another database
 tax_name(q="Petrocoptis hispanica", get="family", db="ncbi")
 ```
 
 ```{r}
-#If you wanted to know all the genera in a family, or all species in a genus, 
-#then you're referring to taxa "downstream"
 downstream("Caryophyllaceae", downto="species", db="itis")
 ```
 
 ```{r}
-name="Minuartia cerastiifolia"  
+name="Minuartia rossii"  
 tsn=get_tsn(name, accepted=FALSE)
 tsn
 lapply(tsn, itis_acceptname)
 ```
 
-```{r}
-#Here's another way to do that, in another database
-tax_name(q="Minuartia cerastiifolia", get="family", db="ncbi")
-```
+
 
 ```{r}
-#If you wanted to know all the genera in a family, or all species in a genus, 
-#then you're referring to taxa "downstream"
-downstream("Caryophyllaceae", downto="species", db="itis")
+classification(c("Petrocoptis hispanica", "Minuartia rossii"), db="itis")
 ```
 
 3. Angiosperm or otherwise, what plant family do they belong to?
@@ -451,14 +443,20 @@ downstream("Caryophyllaceae", downto="species", db="itis")
 
 4. For at least one genus, look up all the species in that genus.
 
-5. For one species, look up to see if there are subspecies or other infraspecific forms.
-```{r}
-tax_name(q="Petrocoptis hispanica", get="subspecies", db="ncbi")
-```
+#all species for Minuartia
 
 ```{r}
-tax_name(q="Minuartia cerastiifolia", get="family", db="ncbi")
+downstream("Minuartia", downto="species", db="itis")
 ```
+
+5. For one species, look up to see if there are subspecies or other infraspecific forms.
+
+#no subspecies for Minuartia rossii
+
+```{r}
+tax_name(q="Minuartia rossii", get="subspecies", db="ncbi")
+```
+
 
 WORK WITH RGBIF OR SPOCC
 6. For both, search and download species occurrence data; prepare as a data-frame
@@ -477,9 +475,9 @@ dim(Flower.df)
 Flower.df
 ```
 
-#data frame for Minuartia cerastiifolia
+#data frame for Minuartia rossii
 ```{r}
-Planty <- occ(q="Minuartia cerastiifolia", from="gbif", limit=50)
+Planty <- occ(q="Minuartia rossii", from="gbif", limit=50)
 Planty
 Planty.dat <- (Planty$gbif$data)
 head(Planty.dat)
@@ -497,19 +495,107 @@ Planty.df
 WORK WITH OCCURRENCE DATA, WORLDCLIM DATA AND MAPS
 8. Map occurrence data with a climate variable for one species on the peninsula
 
-#for Petrocoptis hispanica
+#for Minuartia rossii
 ```{r}
-P_hispanica <- BIEN_occurrence_species(species = "Petrocoptis hispanica")
+P_hispanica <- BIEN_occurrence_species(species = "Minuartia rossii")
 
-P_hispanica_rangemap <- BIEN_ranges_load_species("Petrocoptis hispanica")
+P_hispanica_rangemap <- BIEN_ranges_load_species("Minuartia rossii")
 
-map('world', fill=T, col="grey", bg="light blue", xlim=c(-85,-35), ylim=c(-40,12))
-  plot(P_hispanica_rangemap, col="green", add=T)
+map('world', fill=T, col="grey", bg="light blue", xlim=c(-180,-20), ylim=c(-60, 80))
+plot(P_hispanica_rangemap, col="green", add=T)
 ```
 
 9. Also map that species with climate variables on a world map or European map. Are you convinced that the species is endemic to this peninsula?
+```{r}
+all.worldclim <- raster::getData("worldclim", res = 10, var = "bio")
+all.worldalt <- raster::getData("worldclim", res = 10, var = "alt")
+plot(all.worldclim[["bio1"]])
+plot(all.worldclim[["bio12"]])
+plot(all.worldalt[["alt"]])
+```
+
+#here is the climate/rangemap for Minuartia rossii
+
+```{r}
+plot(all.worldclim[["bio1"]])
+points(P_hispanica[,c("longitude", "latitude")], pch = 24, cex = 0.5)
+plot(all.worldclim[["bio12"]])
+points(P_hispanica[,c("longitude", "latitude")], pch = 16, cex = 0.5, col = "red")
+
+
+```
+
+```{r}
+plot(all.worldclim[["bio1"]], xlim=c(-160,-130),ylim=c(50,75))
+```
+
+#here is my cropped rangemap/climate map for Minuartia rossii
+```{r}
+plot(all.worldclim[["bio1"]], xlim=c(-160,-130),ylim=c(50,75))
+points(P_hispanica[,c("longitude", "latitude")], pch = 24, cex = 0.5)
+plot(all.worldclim[["bio12"]])
+points(P_hispanica[,c("longitude", "latitude")], pch = 16, cex = 0.5, col = "red")
+
+
+```
+
+#I am pretty convinced that Minuartia rossii is endemic to this climate/range as it is found nowhere else and the climate is fairly uniform throughout. 
+
+
 10. Returning to your results for #4 above, find another species with a range outside of the  peninsula. Download occurrence data and map on a world map. 
-11. Then re-map on an appropriately cropped map.
+
+#Puerto Rican Hibiscus 
+```{r}
+# Download the data for a focal species.
+Thespesia_grandiflora <- BIEN_occurrence_species(species = "Thespesia grandiflora")
+```
+
+```{r}
+str(Thespesia_grandiflora)
+head(Thespesia_grandiflora)
+tail(Thespesia_grandiflora)
+```
+
+```{r}
+Thespesia_grandiflora_rangemap <- BIEN_ranges_load_species("Thespesia grandiflora")
+```
+
+```{r}
+map('world', fill=T, col="grey", bg = "light blue", xlim=c(-180,20),ylim=c(-60,80))
+plot(Thespesia_grandiflora_rangemap, col="green", add=T)
+```
+
+```{r}
+map('world', fill=T, col="grey", bg="light blue", xlim=c(-180,-20), ylim=c(-60, 80))
+plot(Thespesia_grandiflora_rangemap, col="green", add=T)
+points(cbind(Thespesia_grandiflora$longitude, Thespesia_grandiflora$latitude), col="blue", pch=20, cex=1)
+```
+
+```{r}
+plot(all.worldclim[["bio1"]])
+points(Thespesia_grandiflora[,c("longitude", "latitude")], pch = 24, cex = 0.5)
+plot(all.worldclim[["bio12"]])
+points(Thespesia_grandiflora[,c("longitude", "latitude")], pch = 16, cex = 0.5, col = "red")
+
+
+```
+
+```{r}
+plot(all.worldclim[["bio1"]], xlim=c(-100,-50),ylim=c(10,30))
+```
+
+#here is the cropped climate/rangemap from the hibiscus
+
+```{r}
+plot(all.worldclim[["bio1"]], xlim=c(-100,-50),ylim=c(10,30))
+points(Thespesia_grandiflora[,c("longitude", "latitude")], pch = 24, cex = 0.5)
+plot(all.worldclim[["bio12"]])
+points(Thespesia_grandiflora[,c("longitude", "latitude")], pch = 16, cex = 0.5, col = "red")
+
+
+```
 
 ONE LAST THING
 12. Don't forget to identify the peninsula that we are working with!
+#for Minuartia rossii, I was primarily focusing on Alaska
+#for the hibiscu, Puerto Rico! 
