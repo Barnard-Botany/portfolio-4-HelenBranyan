@@ -259,7 +259,7 @@ abundance
 ```
 
 ```{r}
-abundance <- read.csv("RecipesAbundance.csv", row.names = 1)
+abundance <- read.csv("AbundanceRecipes.csv", row.names = 1)
 abundance
 ```
 
@@ -268,17 +268,11 @@ abundance <- as.matrix(abundance)
 dim(abundance)
 ```
 
-```{R}
-library(labdsv)
-abundance<-matrify(abundance)
-abundance
-```
-
 #recipe data is now a matrix! 
 
 The compiled matrix has a master list of all plant species across all six lists. Resolve this master list for proper taxonomy -- each plant species should have an accepted scientific species name. (Using taxize if possible.)
 
-#taxize still not workin :(
+#taxize still not workin :( but I did use GlobalNames 
 
 Phylogenize (revisiting skills from Digital Lab 3). Again, it's a good idea to write the tree you create as a file; you then can and should push back to GitHub as you submit your assignment. 
 
@@ -353,22 +347,7 @@ shannon
 #now the PD: 
 
 
-```{r}
-#This first line sets up a grid for mapping multiple phylogenies on one panel
-#This is a general command that could be used almost anywhere
-#We used it above to set up a 2,3 grid. Here, instead, we set up a 2,2 grid for four plots.
-par(mfrow = c(2, 2))
-#Now we are going to start a loop, so that we do the same thing four times, but each first, second, third and fourth times through the loop, something different is being added to the tip labels on the plot command based on the four samples (which are in the four rows of our abundance matrix)
-for (i in row.names(abundance)) {
-plot(prunedAB, show.tip.label = FALSE, main = i)
-  tiplabels(tip = which(prunedAB$tip.label %in% names(which(abundance [i, ] > 0))), pch=19, cex=1)
-}
-```
 
-```{r}
-pd.EXAMPLE <- pd(abundance, prunedAB, include.root=TRUE)
-pd.EXAMPLE
-```
 
 #lastly, the MPD: 
 
