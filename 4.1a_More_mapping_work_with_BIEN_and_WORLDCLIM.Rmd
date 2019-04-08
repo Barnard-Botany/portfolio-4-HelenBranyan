@@ -491,6 +491,7 @@ Planty.df
 
 7. Clean-up the data-frame:  remove occurrences with missing data and duplicates
 
+#Searched all of the names, clean! 
 
 WORK WITH OCCURRENCE DATA, WORLDCLIM DATA AND MAPS
 8. Map occurrence data with a climate variable for one species on the peninsula
