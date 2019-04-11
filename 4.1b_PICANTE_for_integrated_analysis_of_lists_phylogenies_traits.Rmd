@@ -272,7 +272,7 @@ dim(abundance)
 
 The compiled matrix has a master list of all plant species across all six lists. Resolve this master list for proper taxonomy -- each plant species should have an accepted scientific species name. (Using taxize if possible.)
 
-#taxize still not workin :( but I did use GlobalNames 
+
 
 Phylogenize (revisiting skills from Digital Lab 3). Again, it's a good idea to write the tree you create as a file; you then can and should push back to GitHub as you submit your assignment. 
 
@@ -312,7 +312,7 @@ EG<-c("Allium cepa",
 "Zea mays",
 "Zingiber officinale")
 EG
-tree_phylomatic_EG1 <- phylomatic(taxa = EG, get = 'POST')
+tree_phylomatic_EG1 <- phylomatic(taxa = EG, get = "POST")
 plot(tree_phylomatic_EG1, no.margin = TRUE, type="cladogram")
 newick_fn = "tree_phylomatic_EG1"
 write.tree(tree_phylomatic_EG1, file=newick_fn)
@@ -329,10 +329,15 @@ write.csv(tree_phylomatic_EG2, file=newick_fn1)
 
 Create six different annotations of the phylogeny, differing by showing the list-specific taxa. 
 
-#not sure what this means yet... 
+```{r}
+par(mfrow = c(3, 2))
+for (i in row.names(abundance)) {
+plot(tree_phylomatic_EG2, show.tip.label = FALSE, main = i)
+  tiplabels(tip = which(tree_phylomatic_EG2$tip.label %in% names(which(abundance [i, ] > 0))), pch=19, cex=1)
+}
+```
 
 Figure out both Shannon or Simpson diversity indices, and PD (Phylogenetic Diversity). Comment on how they compare. Figure out one additional analysis from today's lab, your choice. 
-
 
 #let's go with Shannon first: 
 
@@ -346,9 +351,17 @@ shannon
 
 #now the PD: 
 
-
+```{r}
+pd.EXAMPLE <- pd(abundance, tree_phylomatic_EG2, include.root=TRUE)
+pd.EXAMPLE
+```
 
 
 #lastly, the MPD: 
 
-
+```{r}
+phydist <- cophenetic(tr_full_lengths)
+ses.mpd.result <- ses.mpd(abundance, phydist, null.model = "taxa.labels",
+abundance.weighted = FALSE, runs = 99)
+ses.mpd.result
+```
