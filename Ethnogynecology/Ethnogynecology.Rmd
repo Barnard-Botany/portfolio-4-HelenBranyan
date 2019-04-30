@@ -1,0 +1,60 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r}
+plot(cars)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
+```{r}
+N_nucifera <- BIEN_occurrence_species(species = "Nelumbo nucifera")
+O_sativa <- BIEN_occurrence_species(species = "Oryza sativa")
+M_paradisiaca <- BIEN_occurrence_species(species = "Musa paradisiaca")
+
+N_nucifera_rangemap <- BIEN_ranges_load_species("Nelumbo nucifera")
+O_sativa_rangemap <- BIEN_ranges_load_species("Oryza sativa")
+M_paradisiaca_rangemap <- BIEN_ranges_load_species("Musa paradisiaca")
+```
+
+```{r}
+map('world', fill=T, col="grey", bg="light blue", xlim=c(65,90), ylim=c(8,40))
+  plot(N_nucifera_rangemap, col="green", add=T)
+```
+
+```{r}
+map('world', fill=T, col="grey", bg="light blue", xlim=c(65,90), ylim=c(8,40))
+plot(O_sativa_rangemap, col="red", add=T)
+```
+
+```{r}
+map('world', fill=T, col="grey", bg="light blue", xlim=c(65,90), ylim=c(8,40))
+plot(M_paradisiaca_rangemap, col="green", add=T)
+```
+
+```{r}
+# Map occurence records for three species of Jungia
+map('world', fill=T, col="grey", bg="light blue", xlim=c(-145,-50),ylim=c(12,78))
+points(cbind(N_nucifera$longitude, N_nucifera$latitude), col="red", pch=20, cex=.8)
+points(cbind(P_nigrum$longitude, P_nigrum$latitude), col="blue", pch=20, cex=.8)
+points(cbind(M_paradisiaca$longitude, M_paradisiaca$latitude), col="green", pch=20, cex=.8)
+```
+
+```{r}
+plot(all.worldclim[["bio1"]])
+points(M_paradisiaca[,c("longitude", "latitude")], pch = 24, cex = 0.5)
+plot(all.worldclim[["bio12"]])
+points(M_paradisiaca[,c("longitude", "latitude")], pch = 16, cex = 0.5, col = "green")
+plot(all.worldalt[["alt"]], xlim=c(-125,-50), ylim=c(-25,30))
+points(M_paradisiaca[,c("longitude", "latitude")], pch = 16, cex = 0.5, col = "green")
+```
