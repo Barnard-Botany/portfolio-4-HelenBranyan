@@ -17,6 +17,7 @@ When you save the notebook, an HTML file containing the code and output will be 
 
 The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
 
+#finding out that there's no data in India from BEIN :) 
 ```{r}
 N_nucifera <- BIEN_occurrence_species(species = "Nelumbo nucifera")
 O_sativa <- BIEN_occurrence_species(species = "Oryza sativa")
@@ -42,11 +43,12 @@ map('world', fill=T, col="grey", bg="light blue", xlim=c(65,90), ylim=c(8,40))
 plot(M_paradisiaca_rangemap, col="green", add=T)
 ```
 
+#there is occurance data in BEIN for Plantains in SA
 ```{r}
 # Map occurence records for three species of Jungia
 map('world', fill=T, col="grey", bg="light blue", xlim=c(-145,-50),ylim=c(12,78))
 points(cbind(N_nucifera$longitude, N_nucifera$latitude), col="red", pch=20, cex=.8)
-points(cbind(P_nigrum$longitude, P_nigrum$latitude), col="blue", pch=20, cex=.8)
+points(cbind(O_sativa$longitude, O_sativa$latitude), col="blue", pch=20, cex=.8)
 points(cbind(M_paradisiaca$longitude, M_paradisiaca$latitude), col="green", pch=20, cex=.8)
 ```
 
@@ -57,4 +59,87 @@ plot(all.worldclim[["bio12"]])
 points(M_paradisiaca[,c("longitude", "latitude")], pch = 16, cex = 0.5, col = "green")
 plot(all.worldalt[["alt"]], xlim=c(-125,-50), ylim=c(-25,30))
 points(M_paradisiaca[,c("longitude", "latitude")], pch = 16, cex = 0.5, col = "green")
+```
+
+#getting occurance data on Piper nigrum from rgbif 
+
+```{r}
+library("rgbif")
+library("spocc")
+library("taxize")
+#Sometimes you know the species name, but you may be a little unsure of the spelling 
+results=gnr_resolve(names="Nelumbo nucifera")
+head(results$matched_name)
+results=gnr_resolve(names="Piper nigrum")
+head(results$matched_name)
+results=gnr_resolve(names="Musa paradisiaca")
+head(results$matched_name)
+```
+
+```{r}
+library(rgbif)
+Piper <- occ_search(scientificName="Piper nigrum", limit=1000)
+#head(Piper)
+colnames(Piper$data)
+#Piper$data$genus
+#Piperlaria$data$species
+unique(Piper$data$genus)
+unique(Piper$data$species)
+```
+
+```{r}
+#Choose just three variables
+Piper.small <- subset(Piper$data, select=c("species", "decimalLatitude",
+"decimalLongitude"))
+#Rename the columns, make sure you're working with a dataframe
+colnames(Piper.small) <- c("species", "lat", "lon")
+Piper.small <- as.data.frame(Piper.small)
+head(Piper.small)
+tail(Piper.small)
+#There are often occurrences with missing values to remove 
+dim(Piper.small)
+Piper.small <- Piper.small[complete.cases(Piper.small),]
+dim(Piper.small)
+#Also there may be duplicates, the same plant or population observed twice
+#Or uploaded twice into the database
+Piper.u <- unique(Piper.small)
+dim(Piper.u)
+```
+
+
+```{r}
+all.worldclim <- raster::getData("worldclim", res = 10, var = "bio")
+all.worldalt <- raster::getData("worldclim", res = 10, var = "alt")
+plot(all.worldclim[["bio1"]])
+plot(all.worldclim[["bio12"]])
+plot(all.worldalt[["alt"]])
+```
+
+#altitude map of India 
+```{r}
+plot(all.worldalt[["alt"]], xlim=c(60, 90), ylim=c(0, 35))
+```
+
+#climate map of India 
+```{r}
+plot(all.worldclim[["bio1"]], xlim=c(60, 90), ylim=c(0, 35))
+```
+
+#Phylogeny of top 5 most frequently cited plants 
+```{r}
+EG<-c("Oryza sativa",
+"Piper nigrum",
+"Nelumbo nucifera",
+"Musa paradisicia",
+"Sesamum indicum")
+EG
+tree_phylomatic_EG1 <- phylomatic(taxa = EG, get = "POST")
+plot(tree_phylomatic_EG1, no.margin = TRUE, type="cladogram")
+newick_fn = "tree_phylomatic_EG1"
+write.tree(tree_phylomatic_EG1, file=newick_fn)
+#repeating to get tree from Zanne2014
+tree_phylomatic_EG2 <- phylomatic(taxa = EG, storedtree ="zanne2014", get = 'POST')
+plot(tree_phylomatic_EG2, no.margin = TRUE, type="cladogram")
+newick_fn1 = "tree_phylomatic_EG2"
+write.tree(tree_phylomatic_EG2, file=newick_fn1)
 ```
